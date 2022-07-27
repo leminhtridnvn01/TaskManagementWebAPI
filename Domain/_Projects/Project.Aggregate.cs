@@ -30,12 +30,12 @@ namespace Domain.Projects
             Name = name;
             Description = description;
         }
-        public void AddMember(User member)
+        public void AddMember(int memberId)
         {
             this.Members.Add(new ProjectMember
             {
-                Member = member,
-                Project = this
+                MemberId = memberId,
+                ProjectId = this.Id
             });
         }
         public void CreateListTaskDefault()
@@ -53,7 +53,10 @@ namespace Domain.Projects
                 Name = listTaskName
             });
         }
-
+        public void RemoveMember(int memberId)
+        {
+            this.Members.Remove(this.Members.FirstOrDefault(s => s.MemberId == memberId));
+        }
         public void DeleteListTask(int listTaskId)
         {
             var deleteListTaskDomainEvent = new DeleteListTaskDomainEvent(listTaskId);

@@ -122,8 +122,8 @@ namespace API.Services
                 if (!(await _projectMemberRepository.GetAllMember(listTask.Project.Id)).Contains(user))
                     throw new NotFoundException("You are not a member in this project!");
 
-                var newTaskItem = new TaskItem(taskItemInput.Name, taskItemInput.Deadline, taskItemInput.Prioritized, taskItemInput.Description);
-                newTaskItem.AddListTask(listTask);
+                var newTaskItem = new TaskItem(taskItemInput.Name, taskItemInput.Deadline, taskItemInput.Prioritized, taskItemInput.Description, listTaskId);
+
                 await _taskkItemRepository.AddAsync(newTaskItem);
 
                 await _unitOfWork.SaveChangesAsync();
@@ -211,12 +211,12 @@ namespace API.Services
             }
         }
 
-        public async Task<TaskItemDetailResponse> AddAssignee( int taskItemId, string assigneeUsername)
+        public async Task<TaskItemDetailResponse> AddAssignee( int taskItemId, int assigneeId)
         {
             try
             {
                 var taskItem = await _taskkItemRepository.GetAsync(s => s.Id == taskItemId);
-                var newAssignee = await _userRepository.GetAsync(s => s.UserName == assigneeUsername);
+                var newAssignee = await _userRepository.GetAsync(s => s.Id == assigneeId);
                 if (taskItem == null) throw new NotFoundException("Task is not found!");
                 if (newAssignee == null) throw new NotFoundException("User is not found!");
 
@@ -227,7 +227,7 @@ namespace API.Services
 
                 if ((await _assignmentRepository.GetAllAssignees(taskItem.Id)).Contains(newAssignee)) 
                     throw new NotFoundException("Member is existed in this task!");
-                taskItem.AddAssignment(newAssignee);
+                taskItem.AddAssignment(assigneeId);
 
                 await _unitOfWork.SaveChangesAsync();
 
@@ -254,7 +254,7 @@ namespace API.Services
                 if (!(await _projectMemberRepository.GetAllMember(taskItem.ListTask.Project.Id)).Contains(user))
                     throw new NotFoundException("You are not a member in this project!");
 
-                taskItem.AddTag(tag);
+                taskItem.AddTag(tagId);
 
                 await _unitOfWork.SaveChangesAsync();
 
@@ -300,11 +300,11 @@ namespace API.Services
         #endregion
 
         #region Patch
-        public async Task<TaskItemDetailResponse> UpdateDeadlineInTaskItem( int taskId, DateTime newDeadline)
+        public async Task<TaskItemDetailResponse> UpdateDeadlineInTaskItem( int taskItemId, DateTime newDeadline)
         {
             try
             {
-                var taskItem = await _taskkItemRepository.GetAsync(s => s.Id == taskId);
+                var taskItem = await _taskkItemRepository.GetAsync(s => s.Id == taskItemId);
                 if ( taskItem == null) throw new NotFoundException("Task is not found!");
 
                 var userId = Convert.ToInt32(_httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
@@ -324,11 +324,11 @@ namespace API.Services
             }
         }
 
-        public async Task<TaskItemDetailResponse> UpdateAssigneeInProgressInTaskItem( int taskId, string assigneeUsername)
+        public async Task<TaskItemDetailResponse> UpdateAssigneeInProgressInTaskItem( int taskItemId, string assigneeUsername)
         {
             try
             {
-                var taskItem = await _taskkItemRepository.GetAsync(s => s.Id == taskId);
+                var taskItem = await _taskkItemRepository.GetAsync(s => s.Id == taskItemId);
                 var assignee = await _userRepository.GetAsync(s => s.UserName == assigneeUsername);
                 if (taskItem == null ) throw new NotFoundException("Task is not found!");
                 if (assignee == null) throw new NotFoundException("User is not found!");
@@ -338,7 +338,7 @@ namespace API.Services
                 if (!(await _projectMemberRepository.GetAllMember(taskItem.ListTask.Project.Id)).Contains(user))
                     throw new NotFoundException("You are not a member in this project!");
 
-                taskItem.ChangeAssigneeInProgress(assignee);
+                taskItem.ChangeAssigneeInProgress(assignee.Id);
 
                 await _unitOfWork.SaveChangesAsync();
 
@@ -406,6 +406,36 @@ namespace API.Services
             }
         }
 
+        public async Task<bool> DeleteAssignee(int taskItemId, int assigneeId)
+        {
+            try
+            {
+                var taskItem = await _taskkItemRepository.GetAsync(s => s.Id == taskItemId);
+                var newAssignee = await _userRepository.GetAsync(s => s.Id == assigneeId);
+                if (taskItem == null) throw new NotFoundException("Task is not found!");
+                if (newAssignee == null) throw new NotFoundException("User is not found!");
+
+                if (!(await _assignmentRepository.GetAllAssignees(taskItem.Id)).Contains(newAssignee))
+                    throw new NotFoundException("Member is not existed in this task!");
+
+                var userId = Convert.ToInt32(_httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                var user = await _userRepository.GetAsync(s => s.Id == userId);
+                if (!(await _projectMemberRepository.GetAllMember(taskItem.ListTask.Project.Id)).Contains(user))
+                    throw new NotFoundException("You are not a member in this project!");
+                
+                taskItem.RemoveAssignment(assigneeId);
+
+                await _unitOfWork.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+        }
+
         public async Task<bool> DeleteAttachment( int attachmentId)
         {
             try
@@ -431,21 +461,23 @@ namespace API.Services
             }
         }
 
-        public async Task<bool> DeleteTag( DeleteTagRequest tagMappingInput)
+        public async Task<bool> DeleteTag(int taskItemId, int tagId)
         {
             try
             {
-                var taskItem = await _taskkItemRepository.GetAsync(s => s.Id == tagMappingInput.TaskId);
-                var tagMapping = await _tagMappingRepository.GetAsync(s => s.Tag.Id == tagMappingInput.TagId && s.Task.Id == tagMappingInput.TaskId);
+                var taskItem = await _taskkItemRepository.GetAsync(s => s.Id == taskItemId);
                 if ( taskItem == null) throw new NotFoundException("Task is not found!");
-                if (tagMapping == null) throw new NotFoundException("Tag is not existed in this task!");
+                var tag = await _tagRepository.GetAsync(s => s.Id == tagId);
+                if (tag == null) throw new NotFoundException("Tag is not found!");
 
                 var userId = Convert.ToInt32(_httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
                 var user = await _userRepository.GetAsync(s => s.Id == userId);
                 if (!(await _projectMemberRepository.GetAllMember(taskItem.ListTask.Project.Id)).Contains(user))
                     throw new NotFoundException("You are not a member in this project!");
 
-                await _tagMappingRepository.SoftDeleteAsync(tagMapping);    
+                if ((await _tagMappingRepository.GetAsync(s => s.Tag.Id == tagId && s.Task.Id == taskItemId)) == null) 
+                    throw new NotFoundException("Tag is not existed in this task!");
+                taskItem.RemoveTag(tagId);  
 
                 await _unitOfWork.SaveChangesAsync();
 
@@ -456,11 +488,11 @@ namespace API.Services
                 throw e;
             }
         }
-        public async Task<bool> DeleteTaskItem(int taskId)
+        public async Task<bool> DeleteTaskItem(int taskItemId)
         {
             try
             {
-                var taskItem = await _taskkItemRepository.GetAsync(s => s.Id == taskId);
+                var taskItem = await _taskkItemRepository.GetAsync(s => s.Id == taskItemId);
                 if (taskItem == null) throw new NotFoundException("Task is not found!");
 
                 var userId = Convert.ToInt32(_httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
@@ -474,7 +506,7 @@ namespace API.Services
                 }
                 foreach (var tag in taskItem.Tags)
                 {
-                    if (!(await DeleteTag(new DeleteTagRequest{ TagId = tag.Tag.Id, TaskId = tag.Task.Id}))) return false;
+                    if (!(await DeleteTag(taskItem.Id, tag.Id))) return false;
                 }
                 foreach (var listTodo in taskItem.ListTodoes)
                 {

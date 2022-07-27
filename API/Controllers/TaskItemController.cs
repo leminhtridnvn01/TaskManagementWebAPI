@@ -74,9 +74,9 @@ namespace API.Controllers
         [Authorize]
         [HttpPost]
         [Route("Assignees")]
-        public async Task<ActionResult<TaskItemDetailResponse>> AddAssignee([FromHeader] int taskItemId, [FromBody] string assigneeUusername)
+        public async Task<ActionResult<TaskItemDetailResponse>> AddAssignee([FromHeader] int taskItemId, [FromBody] int assigneeId)
         {
-            var newTaskItem = await _taskItemService.AddAssignee(taskItemId, assigneeUusername);
+            var newTaskItem = await _taskItemService.AddAssignee(taskItemId, assigneeId);
             return Ok(newTaskItem);
         }
 
@@ -149,6 +149,19 @@ namespace API.Controllers
 
         [Authorize]
         [HttpDelete]
+        [Route("Assignees")]
+        public async Task<ActionResult<bool>> DeleteAssignee([FromHeader] int taskItemId, [FromBody] int assigneeId)
+        {
+
+            if (!(await _taskItemService.DeleteAssignee(taskItemId, assigneeId)))
+            {
+                return BadRequest("Can not delete this Attachment!");
+            }
+            return Ok("Delete this Attachment successfully!");
+        }
+
+        [Authorize]
+        [HttpDelete]
         [Route("Attachments")]
         public async Task<ActionResult<bool>> DeleteAttachment([FromBody] int attachmentId)
         {
@@ -163,10 +176,10 @@ namespace API.Controllers
         [Authorize]
         [HttpDelete]
         [Route("Tags")]
-        public async Task<ActionResult<bool>> DeleteTag([FromBody] DeleteTagRequest tagMappingInput)
+        public async Task<ActionResult<bool>> DeleteTag([FromHeader] int taskItemId ,[FromBody] int tagId)
         {
             
-            if(!(await _taskItemService.DeleteTag(tagMappingInput)))
+            if(!(await _taskItemService.DeleteTag(taskItemId, tagId)))
             {
                 return BadRequest("Can not delete this Tag!");
             }

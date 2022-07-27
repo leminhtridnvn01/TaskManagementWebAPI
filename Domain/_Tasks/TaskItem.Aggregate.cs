@@ -13,10 +13,12 @@ namespace Domain.Entities.Tasks
         public TaskItem([NotNull] string name,
             DateTime deadline,
             string prioritized,
-            string description) : this()
+            string description, 
+            int listTaskId) : this()
         {
             this.Update(name, prioritized, description);
             this.ChangeDeadline(deadline);
+            this.AddListTask(listTaskId);        
         }
 
         public void Update([NotNull] string name,
@@ -28,9 +30,9 @@ namespace Domain.Entities.Tasks
             Description = description;
         }
 
-        public void AddListTask(ListTask listTask)
+        public void AddListTask(int listTaskId)
         {
-            ListTask = listTask;
+            ListTaskId = listTaskId;
         }
 
         public void CreateAttachment(string name, string fileType, string url)
@@ -68,22 +70,32 @@ namespace Domain.Entities.Tasks
                     Name = name
                 });
         }
-        public void AddAssignment(User assignee)
+        public void AddAssignment(int assigneeId)
         {
             this.Assignees.Add(new Assignment
             {
-                User = assignee,
-                TaskItem = this
+                UserId = assigneeId,
+                TaskItemId = this.Id
             });
         }
 
-        public void AddTag(Tag tag)
+        public void RemoveAssignment(int assigneeId)
+        {
+            this.Assignees.Remove(this.Assignees.FirstOrDefault(s => s.UserId == assigneeId));
+        }
+
+        public void AddTag(int tagId)
         {
             Tags.Add(new TagMapping
             {
-                Tag = tag,
-                Task = this
+                TagId = tagId,
+                TaskId = this.Id
             });
+        }
+
+        public void RemoveTag(int tagId)
+        {
+            this.Tags.Remove(this.Tags.FirstOrDefault(s => s.TagId == tagId));
         }
 
         public bool ChangeDeadline(DateTime newDeadline)
@@ -93,9 +105,9 @@ namespace Domain.Entities.Tasks
             return true;
         }
 
-        public bool ChangeAssigneeInProgress(User assignee)
+        public bool ChangeAssigneeInProgress(int assigneeId)
         {
-            this.AssigneeInProgress = assignee;
+            this.AssigneeInProgressId = assigneeId;
             return true;
         }
     }

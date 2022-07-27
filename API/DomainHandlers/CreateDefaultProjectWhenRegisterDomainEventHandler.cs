@@ -27,7 +27,7 @@ namespace API.DomainHandlers
             var user = notification.User;
 
             var newProject = new Project("Default Project", "This is description");
-            newProject.AddMember(user);
+            newProject.AddMember(user.Id);
             await _projectRepository.AddAsync(newProject);
 
             await _unitOfWork.SaveChangesAsync();

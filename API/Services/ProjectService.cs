@@ -31,7 +31,6 @@ namespace API.Services
         private readonly IProjectMemberRepository _projectMemberRepository;
         private readonly IUserRepository _userRepository;
         private readonly IListTaskRepository _listTaskRepository;
-        private readonly IMediator _mediator;
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
 
@@ -40,7 +39,6 @@ namespace API.Services
             IProjectMemberRepository projectMemberRepository,
             IUserRepository userRepository,
             IListTaskRepository listTaskRepository,
-            IMediator mediator,
             IMapper mapper,
             IUnitOfWork unitOfWork) : base(httpContextAccessor)
         {
@@ -48,7 +46,6 @@ namespace API.Services
             _listTaskRepository = listTaskRepository;
             _projectRepository = projectRepository;
             _projectMemberRepository = projectMemberRepository;
-            _mediator = mediator;
             _mapper = mapper;
             _unitOfWork = unitOfWork;
         }
@@ -85,10 +82,10 @@ namespace API.Services
             try
             {
                 var userId = Convert.ToInt32(_httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-                var user = await _userRepository.GetAsync(s => s.Id == userId);
 
                 var newProject = new Project(projectInput.Name, projectInput.Description);
-                newProject.AddMember(user);
+                newProject.AddMember(userId);
+
                 await _projectRepository.AddAsync(newProject);
 
                 await _unitOfWork.SaveChangesAsync();
@@ -117,7 +114,7 @@ namespace API.Services
 
                 if (await _projectMemberRepository.GetAsync(s => s.Project.Id == project.Id && s.Member.Id == member.Id) != null)
                     throw new NotFoundException("Member is existed!");
-                project.AddMember(member);
+                project.AddMember(memberId);
 
                 await _unitOfWork.SaveChangesAsync();
 
