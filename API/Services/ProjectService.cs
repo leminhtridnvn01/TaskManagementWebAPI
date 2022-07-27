@@ -85,6 +85,7 @@ namespace API.Services
 
                 var newProject = new Project(projectInput.Name, projectInput.Description);
                 newProject.AddMember(userId);
+                newProject.CreateListTaskDefault();
 
                 await _projectRepository.AddAsync(newProject);
 

@@ -17,7 +17,6 @@ namespace Domain.Projects
             , string description) : this()
         {
             this.Update(name, description);
-            this.CreateListTaskDefault();
         }
 
         public void Update([NotNull] string name,
