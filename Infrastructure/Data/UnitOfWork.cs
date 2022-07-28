@@ -1,15 +1,7 @@
-﻿using Domain._Histories;
-using Domain.Base;
+﻿using Domain.Base;
 using Domain.Interfaces;
 using Infrastructure.Data.Repositories;
-using Infrastructure.Extensions;
 using MediatR;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Infrastructure.Data
@@ -18,6 +10,7 @@ namespace Infrastructure.Data
     {
         private readonly EFContext _dbContext;
         private readonly IMediator _mediator;
+
         public UnitOfWork(EFContext dbContext, IMediator mediator)
         {
             _dbContext = dbContext;
@@ -28,7 +21,7 @@ namespace Infrastructure.Data
         {
             return new Repository<T>(_dbContext);
         }
-        
+
         public async Task<bool> SaveChangesAsync()
         {
             _dbContext.OnBeforeSaveChanges();
@@ -36,6 +29,5 @@ namespace Infrastructure.Data
             await _dbContext.SaveEntitiesAsync();
             return true;
         }
-        
     }
 }

@@ -11,22 +11,23 @@ namespace API.Controllers
     public class AccountController : BaseApiController
     {
         private readonly EFContext _context;
+
         public AccountController(EFContext context)
         {
             _context = context;
-
         }
+
         [HttpPost("Register")]
         public async Task<ActionResult<string>> RegisterAsync([FromServices] IUserService _userService, [FromServices] ITokenService _tokenService, RegisterRequest registerDto)
         {
             var newUser = await _userService.CreateUser(registerDto);
             if (newUser == null)
             {
-                 return BadRequest("Can not register now!");
+                return BadRequest("Can not register now!");
             }
             return Ok("Welcome " + newUser.UserName + " !!!");
-
         }
+
         [HttpPost("Login")]
         public async Task<ActionResult<string>> Login([FromServices] IUserService _userService, [FromServices] ITokenService _tokenService, LoginRequest loginRequest)
         {

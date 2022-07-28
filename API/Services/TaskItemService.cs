@@ -1,18 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text.Json;
-using System.Threading.Tasks;
-using API.Exceptions.Unautorizations;
 using API.Extensions;
 using AutoMapper;
-using Domain._Histories;
-using Domain.DTOs.Attachments.AddAttachment;
 using Domain.DTOs.Attachments.GetAttachment;
 using Domain.DTOs.ListTasks.GetListTask;
 using Domain.DTOs.ListTodos.AddListTodo;
-using Domain.DTOs.Tags.DeleteTag;
 using Domain.DTOs.Tags.GetTag;
 using Domain.DTOs.TaskItems.AddTaskItem;
 using Domain.DTOs.TaskItems.GetTaskItem;
@@ -25,9 +15,11 @@ using Domain.ListTasks;
 using Domain.Projects;
 using Domain.Tasks;
 using Domain.Users;
-using Infrastructure.Data.Repositories;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace API.Services
 {
@@ -45,9 +37,10 @@ namespace API.Services
         private readonly IAttachmentRepository _attachmentRepository;
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
+
         public TaskItemService(ITaskItemRepository taskItemRepository,
             IUserRepository userRepository,
-            IListTaskRepository listTaskRepository, 
+            IListTaskRepository listTaskRepository,
             ITagRepository tagRepository,
             IListTodoRepository listTodoRepository,
             ITodoItemRepository todoItemRepository,
@@ -74,7 +67,8 @@ namespace API.Services
         }
 
         #region Get
-        public async Task<TaskItemDetailResponse> GetTaskItem( int taskItemId)
+
+        public async Task<TaskItemDetailResponse> GetTaskItem(int taskItemId)
         {
             try
             {
@@ -93,7 +87,7 @@ namespace API.Services
                         if (todoItem.TodoParrent != null) listtodo.TodoItems.Remove(todoItem);
                     }
                 }
-                
+
                 var taskItemMapper = _mapper.Map<TaskItemDetailResponse>(taskItem);
                 var assignees = await _assignmentRepository.GetAllAssignees(taskItemId);
                 taskItemMapper.ListAssignee = _mapper.Map<List<UserResponse>>(assignees);
@@ -107,10 +101,12 @@ namespace API.Services
                 throw e;
             }
         }
-        #endregion
+
+        #endregion Get
 
         #region Post
-        public async  Task<ListTaskDetailResponse> CreateTaskItem( int listTaskId, AddTaskItemRequest taskItemInput)
+
+        public async Task<ListTaskDetailResponse> CreateTaskItem(int listTaskId, AddTaskItemRequest taskItemInput)
         {
             try
             {
@@ -135,7 +131,8 @@ namespace API.Services
                 throw e;
             }
         }
-        public async Task<TaskItemDetailResponse> CreateAttachment( int taskItemId, AddAttachmentRequest attachmentInput)
+
+        public async Task<TaskItemDetailResponse> CreateAttachment(int taskItemId, AddAttachmentRequest attachmentInput)
         {
             try
             {
@@ -159,7 +156,7 @@ namespace API.Services
             }
         }
 
-        public async Task<TaskItemDetailResponse> CreateListTodo( int taskItemId, AddListTodoRequest listTodoInput)
+        public async Task<TaskItemDetailResponse> CreateListTodo(int taskItemId, AddListTodoRequest listTodoInput)
         {
             try
             {
@@ -211,7 +208,7 @@ namespace API.Services
             }
         }
 
-        public async Task<TaskItemDetailResponse> AddAssignee( int taskItemId, int assigneeId)
+        public async Task<TaskItemDetailResponse> AddAssignee(int taskItemId, int assigneeId)
         {
             try
             {
@@ -225,7 +222,7 @@ namespace API.Services
                 if (!(await _projectMemberRepository.GetAllMember(taskItem.ListTask.Project.Id)).Contains(user))
                     throw new NotFoundException("You are not a member in this project!");
 
-                if ((await _assignmentRepository.GetAllAssignees(taskItem.Id)).Contains(newAssignee)) 
+                if ((await _assignmentRepository.GetAllAssignees(taskItem.Id)).Contains(newAssignee))
                     throw new NotFoundException("Member is existed in this task!");
                 taskItem.AddAssignment(assigneeId);
 
@@ -235,12 +232,11 @@ namespace API.Services
             }
             catch (Exception e)
             {
-
                 throw e;
             }
         }
 
-        public async Task<TaskItemDetailResponse> AddTag( int taskItemId, int tagId)
+        public async Task<TaskItemDetailResponse> AddTag(int taskItemId, int tagId)
         {
             try
             {
@@ -262,15 +258,15 @@ namespace API.Services
             }
             catch (Exception e)
             {
-
                 throw new Exception(e + "");
             }
         }
 
-        #endregion
+        #endregion Post
 
         #region Put
-        public async Task<TaskItemDetailResponse> UpdateTaskItem(int taskItemId,  UpdateTaskItemsRequest taskItemInput)
+
+        public async Task<TaskItemDetailResponse> UpdateTaskItem(int taskItemId, UpdateTaskItemsRequest taskItemInput)
         {
             try
             {
@@ -292,20 +288,20 @@ namespace API.Services
             }
             catch (Exception e)
             {
-
                 throw e;
             }
         }
 
-        #endregion
+        #endregion Put
 
         #region Patch
-        public async Task<TaskItemDetailResponse> UpdateDeadlineInTaskItem( int taskItemId, DateTime newDeadline)
+
+        public async Task<TaskItemDetailResponse> UpdateDeadlineInTaskItem(int taskItemId, DateTime newDeadline)
         {
             try
             {
                 var taskItem = await _taskkItemRepository.GetAsync(s => s.Id == taskItemId);
-                if ( taskItem == null) throw new NotFoundException("Task is not found!");
+                if (taskItem == null) throw new NotFoundException("Task is not found!");
 
                 var userId = Convert.ToInt32(_httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
                 var user = await _userRepository.GetAsync(s => s.Id == userId);
@@ -324,13 +320,13 @@ namespace API.Services
             }
         }
 
-        public async Task<TaskItemDetailResponse> UpdateAssigneeInProgressInTaskItem( int taskItemId, string assigneeUsername)
+        public async Task<TaskItemDetailResponse> UpdateAssigneeInProgressInTaskItem(int taskItemId, string assigneeUsername)
         {
             try
             {
                 var taskItem = await _taskkItemRepository.GetAsync(s => s.Id == taskItemId);
                 var assignee = await _userRepository.GetAsync(s => s.UserName == assigneeUsername);
-                if (taskItem == null ) throw new NotFoundException("Task is not found!");
+                if (taskItem == null) throw new NotFoundException("Task is not found!");
                 if (assignee == null) throw new NotFoundException("User is not found!");
 
                 var userId = Convert.ToInt32(_httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
@@ -349,10 +345,12 @@ namespace API.Services
                 throw e;
             }
         }
-        #endregion
+
+        #endregion Patch
 
         #region Delete
-        public async Task<bool> DeleteTodoItem( int todoItemId)
+
+        public async Task<bool> DeleteTodoItem(int todoItemId)
         {
             try
             {
@@ -368,7 +366,7 @@ namespace API.Services
                 {
                     await _todoItemRepository.SoftDeleteAsync(subTodoItem);
                 }
-                await _todoItemRepository.SoftDeleteAsync(todoItem);    
+                await _todoItemRepository.SoftDeleteAsync(todoItem);
 
                 await _unitOfWork.SaveChangesAsync();
                 return true;
@@ -379,7 +377,7 @@ namespace API.Services
             }
         }
 
-        public async Task<bool> DeleteListTodo( int listTodoId)
+        public async Task<bool> DeleteListTodo(int listTodoId)
         {
             try
             {
@@ -395,7 +393,7 @@ namespace API.Services
                 {
                     await DeleteTodoItem(todoItem.Id);
                 }
-                await _listTodoRepository.SoftDeleteAsync(listTodo);    
+                await _listTodoRepository.SoftDeleteAsync(listTodo);
 
                 await _unitOfWork.SaveChangesAsync();
                 return true;
@@ -422,7 +420,7 @@ namespace API.Services
                 var user = await _userRepository.GetAsync(s => s.Id == userId);
                 if (!(await _projectMemberRepository.GetAllMember(taskItem.ListTask.Project.Id)).Contains(user))
                     throw new NotFoundException("You are not a member in this project!");
-                
+
                 taskItem.RemoveAssignment(assigneeId);
 
                 await _unitOfWork.SaveChangesAsync();
@@ -431,12 +429,11 @@ namespace API.Services
             }
             catch (Exception e)
             {
-
                 throw e;
             }
         }
 
-        public async Task<bool> DeleteAttachment( int attachmentId)
+        public async Task<bool> DeleteAttachment(int attachmentId)
         {
             try
             {
@@ -449,7 +446,7 @@ namespace API.Services
                 if (!(await _projectMemberRepository.GetAllMember(attachment.TaskItem.ListTask.Project.Id)).Contains(user))
                     throw new NotFoundException("You are not a member in this project!");
 
-                await _attachmentRepository.SoftDeleteAsync(attachment);    
+                await _attachmentRepository.SoftDeleteAsync(attachment);
 
                 await _unitOfWork.SaveChangesAsync();
 
@@ -466,7 +463,7 @@ namespace API.Services
             try
             {
                 var taskItem = await _taskkItemRepository.GetAsync(s => s.Id == taskItemId);
-                if ( taskItem == null) throw new NotFoundException("Task is not found!");
+                if (taskItem == null) throw new NotFoundException("Task is not found!");
                 var tag = await _tagRepository.GetAsync(s => s.Id == tagId);
                 if (tag == null) throw new NotFoundException("Tag is not found!");
 
@@ -475,9 +472,9 @@ namespace API.Services
                 if (!(await _projectMemberRepository.GetAllMember(taskItem.ListTask.Project.Id)).Contains(user))
                     throw new NotFoundException("You are not a member in this project!");
 
-                if ((await _tagMappingRepository.GetAsync(s => s.Tag.Id == tagId && s.Task.Id == taskItemId)) == null) 
+                if ((await _tagMappingRepository.GetAsync(s => s.Tag.Id == tagId && s.Task.Id == taskItemId)) == null)
                     throw new NotFoundException("Tag is not existed in this task!");
-                taskItem.RemoveTag(tagId);  
+                taskItem.RemoveTag(tagId);
 
                 await _unitOfWork.SaveChangesAsync();
 
@@ -488,6 +485,7 @@ namespace API.Services
                 throw e;
             }
         }
+
         public async Task<bool> DeleteTaskItem(int taskItemId)
         {
             try
@@ -500,7 +498,7 @@ namespace API.Services
                 if (!(await _projectMemberRepository.GetAllMember(taskItem.ListTask.Project.Id)).Contains(user))
                     throw new NotFoundException("You are not a member in this project!");
 
-                foreach (var attachment in taskItem.Attachments) 
+                foreach (var attachment in taskItem.Attachments)
                 {
                     if (!(await DeleteAttachment(attachment.Id))) return false;
                 }
@@ -513,7 +511,7 @@ namespace API.Services
                     if (!(await DeleteListTodo(listTodo.Id))) return false;
                 }
                 await _taskkItemRepository.SoftDeleteAsync(taskItem);
-                
+
                 await _unitOfWork.SaveChangesAsync();
                 return true;
             }
@@ -522,6 +520,7 @@ namespace API.Services
                 throw e;
             }
         }
-        #endregion
+
+        #endregion Delete
     }
 }

@@ -24,8 +24,5 @@ namespace Domain.DTOs.Users
 
         [Required]
         public string Address { get; set; }
-        
-
-
     }
 }

@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace Domain.DTOs.Projects.GetProject
 {
     public class ProjectResponse

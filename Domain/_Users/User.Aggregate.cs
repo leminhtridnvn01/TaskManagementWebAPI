@@ -1,8 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using Domain.Projects;
 using Domain.Users.Events;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Domain.Users
 {
@@ -13,7 +12,7 @@ namespace Domain.Users
             Projects = new HashSet<ProjectMember>();
         }
 
-        public User([NotNull]string name, [NotNull] int age, [NotNull] string address)
+        public User([NotNull] string name, [NotNull] int age, [NotNull] string address)
         {
             this.Update(name, age, address);
         }

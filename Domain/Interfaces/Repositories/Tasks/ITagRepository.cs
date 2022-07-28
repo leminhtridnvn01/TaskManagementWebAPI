@@ -5,6 +5,5 @@ namespace Domain.Tasks
 {
     public interface ITagRepository : IAsyncRepository<Tag>
     {
-         
     }
 }

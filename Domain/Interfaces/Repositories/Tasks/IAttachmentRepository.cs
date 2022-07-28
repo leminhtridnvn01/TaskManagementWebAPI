@@ -5,6 +5,5 @@ namespace Domain.Tasks
 {
     public interface IAttachmentRepository : IAsyncRepository<Attachment>
     {
-         
     }
 }

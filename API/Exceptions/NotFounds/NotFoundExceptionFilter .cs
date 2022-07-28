@@ -1,5 +1,3 @@
-
-
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -23,7 +21,6 @@ namespace API.Extensions
 
         public void OnActionExecuting(ActionExecutingContext context)
         {
-            
         }
     }
 }

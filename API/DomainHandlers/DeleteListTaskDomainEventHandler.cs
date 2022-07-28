@@ -1,12 +1,11 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Threading;
-using System.Threading.Tasks;
 using AutoMapper;
 using Domain.Interfaces;
 using Domain.Interfaces.Services;
 using Domain.ListTasks;
 using Domain.Projects.Events;
 using MediatR;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace API.DomainHandlers
 {
@@ -28,9 +27,10 @@ namespace API.DomainHandlers
             _mapper = mapper;
             _unitOfWork = unitOfWork;
         }
+
         public async Task Handle(DeleteListTaskDomainEvent notification, CancellationToken cancellationToken)
         {
-            var listTask = await _listTaskRepository.GetAsync(s => s.Id == notification.ListTaskId);  
+            var listTask = await _listTaskRepository.GetAsync(s => s.Id == notification.ListTaskId);
 
             foreach (var taskItem in listTask.TaskItems)
             {

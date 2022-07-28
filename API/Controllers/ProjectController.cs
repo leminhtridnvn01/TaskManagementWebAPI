@@ -1,27 +1,25 @@
-﻿using Domain.DTOs.Projects.AddProject;
-using Domain.Projects;
+﻿using Domain.DTOs.ListTasks.AddListTask;
+using Domain.DTOs.Projects.AddProject;
+using Domain.DTOs.Projects.UpdateProject;
 using Domain.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using TaskManagement.ApplicationTier.API.Controllers;
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-using Domain.DTOs.Projects.GetProject;
-using Domain.DTOs.ListTasks.AddListTask;
-using Domain.DTOs.Projects.UpdateProject;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace API.Controllers
 {
     public class ProjectController : BaseApiController
     {
         private readonly IProjectService _projectService;
+
         public ProjectController(IProjectService projectService)
         {
             _projectService = projectService;
         }
 
         #region Get
+
         [Authorize]
         [HttpGet]
         [Route("{projectId}")]
@@ -30,12 +28,14 @@ namespace API.Controllers
             var project = await _projectService.GetProject(projectId);
             return Ok(project);
         }
-        #endregion
+
+        #endregion Get
 
         #region Post
+
         [Authorize]
         [HttpPost]
-        public async Task<ActionResult<string>> Create( AddProjectRequest projectRequest)
+        public async Task<ActionResult<string>> Create(AddProjectRequest projectRequest)
         {
             var newProject = await _projectService.CreateProject(projectRequest);
             return Ok(newProject);
@@ -53,14 +53,16 @@ namespace API.Controllers
         [Authorize]
         [HttpPost]
         [Route("ListTasks")]
-        public async Task<ActionResult<string>> CreateListTask([FromHeader] int projectId ,[FromBody] AddListTaskRequest listTaskRequest)
+        public async Task<ActionResult<string>> CreateListTask([FromHeader] int projectId, [FromBody] AddListTaskRequest listTaskRequest)
         {
             var newProject = await _projectService.CreateListTask(projectId, listTaskRequest);
             return Ok(newProject);
         }
-        #endregion
+
+        #endregion Post
 
         #region Put
+
         [Authorize]
         [HttpPut]
         public async Task<ActionResult<string>> UpdateProject([FromHeader] int projectId, [FromBody] UpdateProjectRequest projectInput)
@@ -68,19 +70,22 @@ namespace API.Controllers
             var newProject = await _projectService.UpdateProject(projectId, projectInput);
             return Ok(newProject);
         }
-        #endregion
+
+        #endregion Put
 
         #region Delete
+
         [Authorize]
         [HttpDelete]
         public async Task<ActionResult<string>> DeleteProject([FromBody] int projectId)
         {
-            if(!await _projectService.DeleteProject(projectId))
+            if (!await _projectService.DeleteProject(projectId))
             {
                 return BadRequest("Can not delete this project!");
             }
             return Ok("Delete this project successfully!");
         }
+
         [Authorize]
         [HttpDelete]
         [Route("ListTasks")]
@@ -89,6 +94,7 @@ namespace API.Controllers
             var newProject = await _projectService.DeleteListTask(projectId, listTaskId);
             return Ok(newProject);
         }
+
         [Authorize]
         [HttpDelete]
         [Route("Members")]
@@ -97,6 +103,7 @@ namespace API.Controllers
             var newProject = await _projectService.RemoveMember(memberId, projectId);
             return Ok(newProject);
         }
-        #endregion
+
+        #endregion Delete
     }
 }

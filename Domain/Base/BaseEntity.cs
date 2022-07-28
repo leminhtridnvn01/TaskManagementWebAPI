@@ -1,11 +1,6 @@
-﻿using MediatR;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace Domain.Base
 {
@@ -18,6 +13,7 @@ namespace Domain.Base
 
         [NotMapped]
         private List<BaseDomainEvent> _events;
+
         [NotMapped]
         public IReadOnlyList<BaseDomainEvent> Events => _events.AsReadOnly();
 
@@ -39,11 +35,13 @@ namespace Domain.Base
 
     public abstract class BaseEntity<TKey> : BaseEntity
     {
-        public BaseEntity() 
+        public BaseEntity()
         {
             IsDeleted = false;
         }
+
         public TKey Id { get; set; }
+
         [JsonIgnore]
         public bool IsDeleted { get; set; }
     }

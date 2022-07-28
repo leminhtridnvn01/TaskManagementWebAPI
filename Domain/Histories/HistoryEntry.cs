@@ -3,18 +3,16 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain._Histories
 {
-    public partial class HistoryEntry 
+    public partial class HistoryEntry
     {
         public HistoryEntry()
         {
         }
-        public EntityEntry  Entry { get; }
+
+        public EntityEntry Entry { get; }
         public int? UserId { get; set; }
         public string TableName { get; set; }
         public Dictionary<string, object> KeyValues { get; } = new Dictionary<string, object>();
@@ -22,6 +20,7 @@ namespace Domain._Histories
         public Dictionary<string, object> NewValues { get; } = new Dictionary<string, object>();
         public HistoryType AuditType { get; set; }
         public List<string> ChangedColumns { get; } = new List<string>();
+
         public History ToAudit()
         {
             var audit = new History();

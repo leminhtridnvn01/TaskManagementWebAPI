@@ -1,5 +1,4 @@
-﻿using Domain.DTOs.Users;
-using Domain.Users;
+﻿using Domain.Users;
 
 namespace API.Services
 {

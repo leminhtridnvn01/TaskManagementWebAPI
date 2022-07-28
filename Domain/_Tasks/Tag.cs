@@ -9,6 +9,7 @@ namespace Domain.Entities.Tasks
         {
             TaskItems = new HashSet<TagMapping>();
         }
+
         public string Name { get; set; }
         public string Color { get; set; }
         public virtual ICollection<TagMapping> TaskItems { get; set; }

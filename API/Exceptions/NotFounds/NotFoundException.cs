@@ -6,12 +6,13 @@ namespace API.Extensions
     {
         public NotFoundException()
         {
-            
         }
+
         public NotFoundException(object value)
         {
             Value = value;
         }
+
         public int Status { get; set; } = 404;
 
         public object Value { get; set; }

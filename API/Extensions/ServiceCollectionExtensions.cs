@@ -2,12 +2,10 @@
 using API.DomainHandlers;
 using API.Exceptions.Unautorizations;
 using API.Services;
-using Domain._Histories;
 using Domain.Interfaces;
 using Domain.Interfaces.Services;
 using Domain.ListTasks;
 using Domain.Projects;
-using Domain.Projects.Events;
 using Domain.Tasks;
 using Domain.Users;
 using Infrastructure.Data;
@@ -53,6 +51,7 @@ namespace API.Extensions
             return services.AddDbContext<EFContext>(options =>
                      options.UseSqlServer("server=ADMIN\\MINHTRI;database=TaskManagement;user id=sa;password=123456;"));
         }
+
         public static IServiceCollection AddBusinessServices(this IServiceCollection services
            )
         {
@@ -65,6 +64,7 @@ namespace API.Extensions
             services.AddScoped<ITokenService, TokenService>();
             return services;
         }
+
         public static IServiceCollection AddExceptionServices(this IServiceCollection services
           )
         {
