@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Users
+﻿namespace Domain.Users
 {
     public class UserResponse
     {
@@ -12,4 +6,3 @@ namespace Domain.Users
         public string UserName { get; set; }
     }
 }
-

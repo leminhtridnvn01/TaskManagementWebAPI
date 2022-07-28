@@ -1,6 +1,5 @@
 ﻿using Domain.Base;
 using Domain.Projects;
-using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 
 namespace Domain.Users

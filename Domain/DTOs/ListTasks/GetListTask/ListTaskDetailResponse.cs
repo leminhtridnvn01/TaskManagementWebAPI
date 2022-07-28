@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using Domain.DTOs.TaskItems.GetTaskItem;
+using System.Collections.Generic;
 
 namespace Domain.DTOs.ListTasks.GetListTask
 {

@@ -1,30 +1,29 @@
-using System;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using Domain.DTOs.Attachments.GetAttachment;
 using Domain.DTOs.ListTodos.AddListTodo;
-using Domain.DTOs.Tags.AddTag;
-using Domain.DTOs.Tags.DeleteTag;
+using Domain.DTOs.TaskItems.AddTaskItem;
 using Domain.DTOs.TaskItems.GetTaskItem;
 using Domain.DTOs.TaskItems.UpdateTaskItem;
-using Domain.DTOs.TaskItems.AddTaskItem;
+using Domain.DTOs.TodoItems.AddTodoItem;
 using Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Threading.Tasks;
 using TaskManagement.ApplicationTier.API.Controllers;
-using Domain.DTOs.TodoItems.AddTodoItem;
 
 namespace API.Controllers
 {
     public class TaskItemController : BaseApiController
     {
         private readonly ITaskItemService _taskItemService;
+
         public TaskItemController(ITaskItemService taskItemService)
         {
             _taskItemService = taskItemService;
         }
 
         #region Get
+
         [Authorize]
         [HttpGet]
         [Route("{taskItemId}")]
@@ -33,9 +32,11 @@ namespace API.Controllers
             var taskItem = await _taskItemService.GetTaskItem(taskItemId);
             return Ok(taskItem);
         }
-        #endregion
+
+        #endregion Get
 
         #region Post
+
         [Authorize]
         [HttpPost]
         public async Task<ActionResult<TaskItemDetailResponse>> AddTaskItem([FromHeader] int listTaskId, [FromBody] AddTaskItemRequest taskInput)
@@ -88,9 +89,11 @@ namespace API.Controllers
             var newTaskItem = await _taskItemService.AddTag(taskItemId, tagId);
             return Ok(newTaskItem);
         }
-        #endregion
+
+        #endregion Post
 
         #region Put
+
         [Authorize]
         [HttpPut]
         public async Task<ActionResult<TaskItemDetailResponse>> UpdateTask([FromHeader] int taskItemId, [FromBody] UpdateTaskItemsRequest taskItemInput)
@@ -98,9 +101,11 @@ namespace API.Controllers
             var newTaskItem = await _taskItemService.UpdateTaskItem(taskItemId, taskItemInput);
             return Ok(newTaskItem);
         }
-        #endregion
+
+        #endregion Put
 
         #region Patch
+
         [Authorize]
         [HttpPatch]
         [Route("Deadlines")]
@@ -118,16 +123,17 @@ namespace API.Controllers
             var newTaskItem = await _taskItemService.UpdateAssigneeInProgressInTaskItem(taskId, assigneeUsername);
             return Ok(newTaskItem);
         }
-        #endregion
+
+        #endregion Patch
 
         #region Delete
+
         [Authorize]
         [HttpDelete]
         [Route("TodoItems")]
         public async Task<ActionResult<bool>> DeleteTodoItem([FromBody] int todoItemId)
         {
-            
-            if(!(await _taskItemService.DeleteTodoItem(todoItemId)))
+            if (!(await _taskItemService.DeleteTodoItem(todoItemId)))
             {
                 return BadRequest("Can not delete this Todo Item!");
             }
@@ -139,8 +145,7 @@ namespace API.Controllers
         [Route("ListTodos")]
         public async Task<ActionResult<bool>> DeleteListTodo([FromBody] int listTodoId)
         {
-            
-            if(!(await _taskItemService.DeleteListTodo(listTodoId)))
+            if (!(await _taskItemService.DeleteListTodo(listTodoId)))
             {
                 return BadRequest("Can not delete this List Todo!");
             }
@@ -152,7 +157,6 @@ namespace API.Controllers
         [Route("Assignees")]
         public async Task<ActionResult<bool>> DeleteAssignee([FromHeader] int taskItemId, [FromBody] int assigneeId)
         {
-
             if (!(await _taskItemService.DeleteAssignee(taskItemId, assigneeId)))
             {
                 return BadRequest("Can not delete this Attachment!");
@@ -165,8 +169,7 @@ namespace API.Controllers
         [Route("Attachments")]
         public async Task<ActionResult<bool>> DeleteAttachment([FromBody] int attachmentId)
         {
-            
-            if(!(await _taskItemService.DeleteAttachment(attachmentId)))
+            if (!(await _taskItemService.DeleteAttachment(attachmentId)))
             {
                 return BadRequest("Can not delete this Attachment!");
             }
@@ -176,10 +179,9 @@ namespace API.Controllers
         [Authorize]
         [HttpDelete]
         [Route("Tags")]
-        public async Task<ActionResult<bool>> DeleteTag([FromHeader] int taskItemId ,[FromBody] int tagId)
+        public async Task<ActionResult<bool>> DeleteTag([FromHeader] int taskItemId, [FromBody] int tagId)
         {
-            
-            if(!(await _taskItemService.DeleteTag(taskItemId, tagId)))
+            if (!(await _taskItemService.DeleteTag(taskItemId, tagId)))
             {
                 return BadRequest("Can not delete this Tag!");
             }
@@ -190,13 +192,13 @@ namespace API.Controllers
         [HttpDelete]
         public async Task<ActionResult<bool>> DeleteTaskItem([FromBody] int taskId)
         {
-            
-            if(!(await _taskItemService.DeleteTaskItem(taskId)))
+            if (!(await _taskItemService.DeleteTaskItem(taskId)))
             {
                 return BadRequest("Can not delete this Tag!");
             }
             return Ok("Delete this Tag successfully!");
         }
-        #endregion
+
+        #endregion Delete
     }
 }

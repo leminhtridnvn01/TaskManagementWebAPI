@@ -1,8 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace TaskManagement.ApplicationTier.API.Controllers
 {
@@ -10,6 +6,5 @@ namespace TaskManagement.ApplicationTier.API.Controllers
     [ApiController]
     public class BaseApiController : ControllerBase
     {
-
     }
 }

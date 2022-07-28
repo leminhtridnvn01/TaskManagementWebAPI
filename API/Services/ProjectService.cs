@@ -1,8 +1,6 @@
-﻿using API.Exceptions.Unautorizations;
-using API.Extensions;
+﻿using API.Extensions;
 using AutoMapper;
 using Domain.DTOs.ListTasks.AddListTask;
-using Domain.DTOs.ListTasks.GetListTask;
 using Domain.DTOs.Projects.AddProject;
 using Domain.DTOs.Projects.GetProject;
 using Domain.DTOs.Projects.UpdateProject;
@@ -10,16 +8,10 @@ using Domain.Interfaces;
 using Domain.Interfaces.Services;
 using Domain.ListTasks;
 using Domain.Projects;
-using Domain.Projects.Events;
 using Domain.Users;
-using Infrastructure.Data.Repositories;
-using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -51,6 +43,7 @@ namespace API.Services
         }
 
         #region Get
+
         public async Task<ProjectDetailResponse> GetProject(int projectId)
         {
             try
@@ -61,7 +54,7 @@ namespace API.Services
                     throw new NotFoundException("You are not a member in this project!");
 
                 var project = await _projectRepository.GetAsync(s => s.Id == projectId);
-                if (project == null) throw new NotFoundException("Project is not found!"); 
+                if (project == null) throw new NotFoundException("Project is not found!");
 
                 var projectMapper = _mapper.Map<ProjectDetailResponse>(project);
                 var members = await _projectMemberRepository.GetAllMember(projectId);
@@ -74,9 +67,11 @@ namespace API.Services
                 throw e;
             }
         }
-        #endregion
+
+        #endregion Get
 
         #region Post
+
         public async Task<ProjectDetailResponse> CreateProject(AddProjectRequest projectInput)
         {
             try
@@ -150,9 +145,11 @@ namespace API.Services
                 throw e;
             }
         }
-        #endregion
+
+        #endregion Post
 
         #region Put
+
         public async Task<ProjectDetailResponse> UpdateProject(int projectId, UpdateProjectRequest projectInput)
         {
             try
@@ -164,7 +161,7 @@ namespace API.Services
 
                 var project = await _projectRepository.GetAsync(s => s.Id == projectId);
                 if (project == null) throw new NotFoundException("Project is not found!");
-                
+
                 project.Update(projectInput.Name, projectInput.Description);
 
                 await _unitOfWork.SaveChangesAsync();
@@ -177,10 +174,10 @@ namespace API.Services
             }
         }
 
-
-        #endregion
+        #endregion Put
 
         #region Delete
+
         public async Task<bool> DeleteProject(int projectId)
         {
             try
@@ -250,7 +247,7 @@ namespace API.Services
                 if (member == null) throw new NotFoundException("Member is not found!");
 
                 var projectMember = await _projectMemberRepository.GetAsync(s => s.Member.Id == memberId && s.Project.Id == projectId);
-                if ( projectMember == null) throw new NotFoundException("User is not a member in this project!");
+                if (projectMember == null) throw new NotFoundException("User is not a member in this project!");
 
                 await _projectMemberRepository.SoftDeleteAsync(projectMember);
 
@@ -263,6 +260,7 @@ namespace API.Services
                 throw e;
             }
         }
-        #endregion
+
+        #endregion Delete
     }
 }

@@ -1,4 +1,3 @@
-using System.Linq;
 using AutoMapper;
 using Domain.DTOs.Attachments.AddAttachment;
 using Domain.DTOs.Attachments.GetAttachment;
@@ -27,13 +26,12 @@ namespace TaskManagement.ApplicationTier.API.Profiles
     {
         public MapperProfile()
         {
-
             CreateMap<AddProjectRequest, Project>();
 
             CreateMap<AddListTaskRequest, ListTask>();
-            
+
             CreateMap<ListTask, ListTaskResponse>();
-            CreateMap<ListTask, ListTaskDetailResponse >();
+            CreateMap<ListTask, ListTaskDetailResponse>();
             CreateMap<AddListTaskRequest, ListTask>();
 
             CreateMap<User, UserDetailResponse>();
@@ -43,11 +41,11 @@ namespace TaskManagement.ApplicationTier.API.Profiles
             CreateMap<Project, ProjectResponse>();
             CreateMap<Project, ProjectDetailResponse>();
             CreateMap<ProjectDetailResponse, Project>();
-            
+
             CreateMap<AddTaskItemRequest, TaskItem>();
             CreateMap<TaskItem, TaskItemResponse>()
                 .ForMember(
-                    dest => dest.AssigneeInProgress, 
+                    dest => dest.AssigneeInProgress,
                     opt => opt.MapFrom(src => src.AssigneeInProgress.UserName)
                 );
             CreateMap<TaskItem, TaskItemDetailResponse>();
@@ -63,29 +61,18 @@ namespace TaskManagement.ApplicationTier.API.Profiles
 
             CreateMap<ListTodo, ListTodoResponse>()
                 .AfterMap(
-                    (src, dest) => 
+                    (src, dest) =>
                     {
                         if (dest.IsDone == true) dest.Done = 100;
                         else dest.Done = src.CalculateDone();
-                        
                     }
-                );;
+                ); ;
             CreateMap<AddListTodoRequest, ListTodo>();
 
-            CreateMap<TodoItem, TodoItemResponse>()
-                .AfterMap(
-                    (src, dest) => 
-                    {
-                        if (dest.IsDone == true) dest.Done = 100;
-                        else dest.Done = src.CalculateDone();
-                    }
-                );
+            CreateMap<TodoItem, TodoItemResponse>();
             CreateMap<AddTodoItemRequest, TodoItem>();
 
             CreateMap<Tag, TagResponse>();
-
-            
-            
         }
     }
 }

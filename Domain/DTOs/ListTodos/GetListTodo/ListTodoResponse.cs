@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using Domain.DTOs.TodoItems.GetTodoItem;
+using System.Collections.Generic;
 
 namespace Domain.DTOs.ListTodos.GetListTodo
 {
@@ -9,6 +9,7 @@ namespace Domain.DTOs.ListTodos.GetListTodo
         {
             TodoItems = new List<TodoItemResponse>();
         }
+
         public string Name { get; set; }
         public bool IsDone { get; set; }
         public float Done { get; set; }

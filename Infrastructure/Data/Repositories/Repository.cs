@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Infrastructure.Data.Repositories
@@ -15,10 +14,12 @@ namespace Infrastructure.Data.Repositories
     {
         private readonly EFContext _dbContext;
         private DbSet<T> _dbSet;
+
         public DbSet<T> DbSet
-		{
-			get => _dbSet ?? (_dbSet = _dbContext.Set<T>());
-		}
+        {
+            get => _dbSet ?? (_dbSet = _dbContext.Set<T>());
+        }
+
         public Repository(EFContext dbContext)
         {
             _dbContext = dbContext;
@@ -36,6 +37,7 @@ namespace Infrastructure.Data.Repositories
             _dbSet.Remove(entity);
             return Task.FromResult(true);
         }
+
         public Task<bool> SoftDeleteAsync(T entity)
         {
             entity.GetType().GetProperty("IsDeleted").SetValue(entity, true);
@@ -81,8 +83,8 @@ namespace Infrastructure.Data.Repositories
         }
 
         public async Task<IList<TType>> Get<TType>(Expression<Func<T, bool>> where, Expression<Func<T, TType>> select) where TType : class
-		{
-			return await DbSet.Where(where).Select(select).ToListAsync();
-		}
+        {
+            return await DbSet.Where(where).Select(select).ToListAsync();
+        }
     }
 }

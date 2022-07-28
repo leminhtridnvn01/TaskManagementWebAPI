@@ -2,16 +2,8 @@
 using Domain.DTOs.Users;
 using Domain.DTOs.Users.UpdateUser;
 using Domain.Interfaces.Services;
-using Domain.Users;
-using Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Collections;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using TaskManagement.ApplicationTier.API.Controllers;
 
@@ -21,10 +13,11 @@ namespace API.Controllers
     {
         private readonly IUserService _userService;
         private readonly IMapper _mapper;
+
         public UserController(IUserService userService, IMapper mapper)
         {
-           _userService = userService;
-           _mapper = mapper;
+            _userService = userService;
+            _mapper = mapper;
         }
 
         [Authorize]
@@ -54,7 +47,7 @@ namespace API.Controllers
 
         [Authorize]
         [HttpPatch]
-        public async Task<ActionResult<UpdateUserResponse>> ChangeEmail([FromBody]string newEmail)
+        public async Task<ActionResult<UpdateUserResponse>> ChangeEmail([FromBody] string newEmail)
         {
             var newUser = await _userService.ChangeEmail(newEmail);
             if (newUser == null)

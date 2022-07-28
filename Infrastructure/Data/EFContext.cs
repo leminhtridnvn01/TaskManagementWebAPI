@@ -1,20 +1,18 @@
-﻿using Domain.ListTasks;
-using Domain.Projects;
-using Domain.Entities.Tasks;
-using Domain.Users;
-using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
-using System.Threading;
-using MediatR;
-using Infrastructure.Extensions;
-using System.Linq;
-using Domain._Histories;
-using System.Collections.Generic;
+﻿using Domain._Histories;
 using Domain.Base;
+using Domain.Entities.Tasks;
+using Domain.ListTasks;
+using Domain.Projects;
+using Domain.Users;
+using Infrastructure.Extensions;
+using MediatR;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Infrastructure.Data
 {
@@ -22,6 +20,7 @@ namespace Infrastructure.Data
     {
         private readonly IMediator _mediator;
         private readonly IHttpContextAccessor _httpContextAccessor;
+
         public EFContext()
         {
         }
@@ -32,6 +31,7 @@ namespace Infrastructure.Data
             _mediator = mediator;
             _httpContextAccessor = httpContextAccessor;
         }
+
         public DbSet<User> Users { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<ListTask> ListTasks { get; set; }
@@ -52,7 +52,7 @@ namespace Infrastructure.Data
                 .UseSqlServer("server=ADMIN\\MINHTRI;database=TaskManagement;user id=sa;password=123456;");
         }
 
-        protected override void OnModelCreating (ModelBuilder  modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>().HasQueryFilter(p => p.IsDeleted == false);
             modelBuilder.Entity<Project>().HasQueryFilter(p => p.IsDeleted == false);
@@ -66,12 +66,14 @@ namespace Infrastructure.Data
             modelBuilder.Entity<ProjectMember>().HasQueryFilter(p => p.IsDeleted == false);
             modelBuilder.Entity<TagMapping>().HasQueryFilter(p => p.IsDeleted == false);
         }
+
         public async Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             await _mediator.DispatchDomainEventsAsync(this);
             var result = await base.SaveChangesAsync(cancellationToken);
             return true;
         }
+
         public void OnBeforeSaveChanges()
         {
             var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -94,17 +96,19 @@ namespace Infrastructure.Data
                         auditEntry.KeyValues[propertyName] = property.CurrentValue;
                         continue;
                     }
-                    
+
                     switch (entry.State)
                     {
                         case EntityState.Added:
                             auditEntry.AuditType = HistoryType.Create;
                             auditEntry.NewValues[propertyName] = property.CurrentValue;
                             break;
+
                         case EntityState.Deleted:
                             auditEntry.AuditType = HistoryType.Delete;
                             auditEntry.OldValues[propertyName] = property.OriginalValue;
                             break;
+
                         case EntityState.Modified:
                             if (property.IsModified)
                             {

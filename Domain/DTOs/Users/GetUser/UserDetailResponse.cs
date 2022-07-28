@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using Domain.DTOs.Projects.GetProject;
+using System.Collections.Generic;
 
 namespace Domain.DTOs.Users
 {
@@ -9,6 +9,7 @@ namespace Domain.DTOs.Users
         {
             ListProject = new List<ProjectResponse>();
         }
+
         public string UserName { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }

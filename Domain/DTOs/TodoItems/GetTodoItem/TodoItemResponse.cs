@@ -8,6 +8,7 @@ namespace Domain.DTOs.TodoItems.GetTodoItem
         {
             SubTodoItems = new List<TodoItemResponse>();
         }
+
         public string Name { get; set; }
         public bool IsDone { get; set; }
         public float Done { get; set; }

@@ -1,7 +1,4 @@
-﻿using API.Services;
-using AutoMapper;
-using Domain.Interfaces;
-using Domain.Interfaces.Services;
+﻿using Domain.Interfaces;
 using Domain.Projects;
 using Domain.Users.Events;
 using MediatR;
@@ -22,6 +19,7 @@ namespace API.DomainHandlers
             _projectRepository = projectRepository;
             _unitOfWork = unitOfWork;
         }
+
         public async Task Handle(CreateDefaultProjectWhenRegisterDomainEvent notification, CancellationToken cancellationToken)
         {
             var user = notification.User;

@@ -10,6 +10,7 @@ namespace Domain.Entities.Tasks
         {
             TodoItems = new HashSet<TodoItem>();
         }
+
         public string Name { get; set; }
         public bool IsDone { get; set; }
         public virtual TaskItem TaskItem { get; set; }
@@ -23,8 +24,8 @@ namespace Domain.Entities.Tasks
             {
                 float a = (1 / totalSubTodoItems) * 100;
                 if (subItem.IsDone == true) rs = rs + (1 / totalSubTodoItems) * 100;
-            }  
-            return rs;  
+            }
+            return rs;
         }
     }
 }

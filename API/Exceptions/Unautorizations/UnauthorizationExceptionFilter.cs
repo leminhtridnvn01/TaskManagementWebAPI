@@ -21,7 +21,6 @@ namespace API.Exceptions.Unautorizations
 
         public void OnActionExecuting(ActionExecutingContext context)
         {
-            
         }
     }
 }

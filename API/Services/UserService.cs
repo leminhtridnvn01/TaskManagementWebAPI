@@ -6,7 +6,6 @@ using Domain.Interfaces;
 using Domain.Interfaces.Services;
 using Domain.Projects;
 using Domain.Users;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -23,6 +22,7 @@ namespace API.Services
         private readonly IProjectMemberRepository _projectMemberRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+
         public UserService(IHttpContextAccessor httpContextAccessor,
             IUserRepository userRepository,
             IProjectMemberRepository projectMemberRepository,
@@ -34,6 +34,7 @@ namespace API.Services
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
+
         public async Task<UserDetailResponse> CreateUser(RegisterRequest registerRequest)
         {
             try
@@ -61,7 +62,7 @@ namespace API.Services
                 user.CreateDefaultProject();
 
                 await _unitOfWork.SaveChangesAsync();
-                
+
                 return await GetUser(user.Id);
             }
             catch (Exception e)
@@ -133,7 +134,7 @@ namespace API.Services
         {
             try
             {
-                var username =  _httpContextAccessor.HttpContext.User.FindFirst(JwtRegisteredClaimNames.Name).Value;
+                var username = _httpContextAccessor.HttpContext.User.FindFirst(JwtRegisteredClaimNames.Name).Value;
                 var user = await _userRepository.GetAsync(s => s.UserName == username);
                 if (user == null) return null;
 
@@ -153,7 +154,7 @@ namespace API.Services
         {
             try
             {
-                var username =  _httpContextAccessor.HttpContext.User.FindFirst(JwtRegisteredClaimNames.Name).Value;
+                var username = _httpContextAccessor.HttpContext.User.FindFirst(JwtRegisteredClaimNames.Name).Value;
                 var user = await _userRepository.GetAsync(s => s.UserName == username);
                 if (user == null) return null;
 

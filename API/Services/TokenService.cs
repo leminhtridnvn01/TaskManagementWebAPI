@@ -1,5 +1,4 @@
-﻿using Domain.DTOs.Users;
-using Domain.Users;
+﻿using Domain.Users;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -13,11 +12,12 @@ namespace API.Services
     public class TokenService : ITokenService
     {
         private readonly IConfiguration _configuration;
+
         public TokenService(IConfiguration configuration)
         {
             _configuration = configuration;
-
         }
+
         public string CreateToken(User user)
         {
             var claims = new List<Claim>()

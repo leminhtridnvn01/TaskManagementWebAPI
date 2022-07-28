@@ -1,10 +1,7 @@
+using Domain.Base;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Domain.Base;
-using Domain.ListTasks;
-using Domain.Users;
 
 namespace Domain.Entities.Tasks
 {
@@ -13,12 +10,12 @@ namespace Domain.Entities.Tasks
         public TaskItem([NotNull] string name,
             DateTime deadline,
             string prioritized,
-            string description, 
+            string description,
             int listTaskId) : this()
         {
             this.Update(name, prioritized, description);
             this.ChangeDeadline(deadline);
-            this.AddListTask(listTaskId);        
+            this.AddListTask(listTaskId);
         }
 
         public void Update([NotNull] string name,
@@ -61,6 +58,7 @@ namespace Domain.Entities.Tasks
                     Name = name
                 });
         }
+
         public void CreateSubTodoItem(int listTodoId, int SubTodoItemId, string name)
         {
             this.ListTodoes.FirstOrDefault(s => s.Id == listTodoId)
@@ -70,6 +68,7 @@ namespace Domain.Entities.Tasks
                     Name = name
                 });
         }
+
         public void AddAssignment(int assigneeId)
         {
             this.Assignees.Add(new Assignment
